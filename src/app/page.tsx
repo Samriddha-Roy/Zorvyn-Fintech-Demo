@@ -11,6 +11,9 @@ import EmptyDashboardState from '@/components/dashboard/EmptyDashboardState';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserRole } from '@/types';
 import { Plus, ShieldCheck, Lock, Activity, BarChart3, Receipt } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
@@ -26,117 +29,87 @@ export default function DashboardPage() {
     <div className="space-y-12 pb-24">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-20 px-2">
         <div className="space-y-4">
-           <div className="flex items-center gap-3 bg-indigo-600/10 w-fit px-4 py-1.5 rounded-full border border-indigo-500/20">
-             <ShieldCheck className="w-3.5 h-3.5 text-indigo-500" />
-             <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Secure Environment</span>
-           </div>
-          <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none">
+          <Badge variant="outline" className="gap-1.5 border-primary/30 text-primary">
+            <ShieldCheck className="w-3.5 h-3.5" /> Secure Environment
+          </Badge>
+          <h1 className="text-5xl md:text-7xl font-black text-foreground tracking-tighter leading-none">
             Financial <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-indigo-600">Hub</span>
           </h1>
-          <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] max-w-sm">
-             Logged in as: <span className="text-white font-black">{user?.firstName} {user?.lastName}</span> • Status: <span className="text-indigo-500">{role} MODE</span>
+          <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px] max-w-sm">
+            Logged in as: <span className="text-foreground font-black">{user?.firstName} {user?.lastName}</span> • Status: <span className="text-primary">{role} MODE</span>
           </p>
         </div>
 
         {canManageData && (
-          <button 
-            onClick={() => setShowTransactionModal(true)}
-            className="group bg-indigo-600 hover:bg-slate-100 hover:text-indigo-600 text-white font-black px-8 py-5 rounded-[24px] transition-all duration-500 shadow-2xl shadow-indigo-600/30 flex items-center gap-4 uppercase tracking-[0.2em] text-[10px]"
-          >
-            <div className="bg-white/20 p-1.5 rounded-lg group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-              <Plus className="w-4 h-4" />
-            </div>
-            Generate Record
-          </button>
+          <Button size="lg" className="gap-3 font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl px-8 py-6 shadow-2xl shadow-primary/30" onClick={() => setShowTransactionModal(true)}>
+            <Plus className="w-4 h-4" /> Generate Record
+          </Button>
         )}
       </header>
 
-      {/* SUMMARY CARDS (All Roles) */}
+      {/* Summary Cards */}
       <section className="space-y-6">
         <div className="flex items-center gap-3 px-2">
-           <Activity className="w-4 h-4 text-emerald-500" />
-           <h2 className="text-[11px] font-black uppercase tracking-[0.25em] text-slate-500">Live Telemetry Summary</h2>
+          <Activity className="w-4 h-4 text-emerald-500" />
+          <h2 className="text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground">Live Telemetry Summary</h2>
         </div>
         <SummaryCards />
       </section>
 
-      {/* VIEWER WITH NO DATA: Show onboarding */}
-      {role === 'VIEWER' && !hasData && (
-        <EmptyDashboardState />
-      )}
+      {/* Viewer Onboarding */}
+      {role === 'VIEWER' && !hasData && <EmptyDashboardState />}
 
-      {/* CONTENT SECTIONS (only when data exists or user has reports access) */}
+      {/* Content Sections */}
       {(canViewReports || hasData) && (
         <div className="grid grid-cols-1 gap-12">
           <section className="space-y-6">
-            <div className="flex items-center justify-between px-2">
-              <div className="flex items-center gap-3">
-                <BarChart3 className="w-4 h-4 text-indigo-500" />
-                <h2 className="text-[11px] font-black uppercase tracking-[0.25em] text-slate-500">Trend Intelligence</h2>
-              </div>
+            <div className="flex items-center gap-3 px-2">
+              <BarChart3 className="w-4 h-4 text-primary" />
+              <h2 className="text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground">Trend Intelligence</h2>
             </div>
             {canViewReports ? (
               <AnalyticsChart />
             ) : (
-               <PlaceholderCard 
-                 icon={<BarChart3 className="w-10 h-10" />} 
-                 title="Charts Restricted" 
-                 desc="Visual trend analysis requires Analyst or Admin clearance." 
-               />
+              <Card className="border-dashed text-center py-16">
+                <CardContent>
+                  <BarChart3 className="w-10 h-10 text-muted-foreground/30 mx-auto mb-6" />
+                  <h3 className="text-2xl font-black text-muted-foreground mb-3 tracking-tighter">Charts Restricted</h3>
+                  <p className="text-muted-foreground font-bold uppercase text-[10px] tracking-widest max-w-xs mx-auto">
+                    Visual trend analysis requires Analyst or Admin clearance.
+                  </p>
+                </CardContent>
+              </Card>
             )}
           </section>
 
           <section className="space-y-6">
             <div className="flex items-center justify-between px-2">
               <div className="flex items-center gap-3">
-                <Receipt className="w-4 h-4 text-indigo-500" />
-                <h2 className="text-[11px] font-black uppercase tracking-[0.25em] text-slate-500">Secure Ledger Logs</h2>
+                <Receipt className="w-4 h-4 text-primary" />
+                <h2 className="text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground">Secure Ledger Logs</h2>
               </div>
-              {!canViewReports && (
-                 <span className="flex items-center gap-2 text-[9px] font-black text-rose-500/80 uppercase tracking-widest bg-rose-500/5 px-3 py-1 rounded-full border border-rose-500/10">
-                   <Lock className="w-3 h-3" /> Encrypted Data
-                 </span>
-              )}
+              {!canViewReports && <Badge variant="destructive" className="gap-1.5 text-[9px]"><Lock className="w-3 h-3" /> Encrypted</Badge>}
             </div>
-            
             {canViewReports ? (
               <TransactionTable />
             ) : (
-              <PlaceholderCard 
-                icon={<Lock className="w-10 h-10" />} 
-                title="Ledger Access Denied" 
-                desc="The detailed transaction log is strictly restricted to cleared personnel." 
-                locked
-              />
+              <Card className="border-dashed border-destructive/20 text-center py-16">
+                <CardContent>
+                  <Lock className="w-10 h-10 text-destructive/30 mx-auto mb-6" />
+                  <h3 className="text-2xl font-black text-destructive/60 mb-3 tracking-tighter">Ledger Access Denied</h3>
+                  <p className="text-muted-foreground font-bold uppercase text-[10px] tracking-widest max-w-xs mx-auto">
+                    The detailed transaction log is restricted to cleared personnel.
+                  </p>
+                </CardContent>
+              </Card>
             )}
           </section>
         </div>
       )}
 
       <AnimatePresence>
-        {showTransactionModal && (
-          <TransactionForm onClose={() => setShowTransactionModal(false)} />
-        )}
+        {showTransactionModal && <TransactionForm onClose={() => setShowTransactionModal(false)} />}
       </AnimatePresence>
     </div>
-  );
-}
-
-function PlaceholderCard({ icon, title, desc, locked }: any) {
-  return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className={`relative overflow-hidden p-16 md:p-24 border rounded-[40px] text-center group bg-slate-900/10 ${locked ? 'border-dashed border-rose-500/20' : 'border-dashed border-slate-800'}`}
-    >
-      <div className={`absolute top-0 right-0 w-64 h-64 blur-[100px] -z-10 ${locked ? 'bg-rose-600/5' : 'bg-indigo-600/5'}`} />
-      <div className={`mx-auto mb-6 group-hover:scale-110 transition-transform duration-500 ${locked ? 'text-rose-500/30' : 'text-slate-700'}`}>
-        {icon}
-      </div>
-      <h3 className={`text-2xl font-black mb-3 tracking-tighter ${locked ? 'text-rose-500/60' : 'text-slate-400'}`}>{title}</h3>
-      <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest max-w-xs mx-auto leading-relaxed">
-        {desc}
-      </p>
-    </motion.div>
   );
 }

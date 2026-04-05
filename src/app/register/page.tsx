@@ -6,9 +6,13 @@ import * as z from 'zod';
 import api from '@/lib/axios';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Zap, Loader2, KeyRound, User as UserIcon, Shield, Search, Eye } from 'lucide-react';
+import { Zap, Loader2, Shield, Search, Eye } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 const registerSchema = z.object({
   email: z.string().email('Invalid email format'),
@@ -25,9 +29,7 @@ export default function RegisterPage() {
 
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(registerSchema),
-    defaultValues: {
-      role: 'VIEWER'
-    }
+    defaultValues: { role: 'VIEWER' as const }
   });
 
   const selectedRole = watch('role');
@@ -37,9 +39,7 @@ export default function RegisterPage() {
     setError('');
     try {
       await api.post('/auth/register', data);
-      setTimeout(() => {
-        router.push('/login');
-      }, 1000);
+      setTimeout(() => router.push('/login'), 1000);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed. Try again.');
     } finally {
@@ -48,107 +48,67 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-950 flex items-center justify-center z-50 p-6 overflow-y-auto">
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] -z-10" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-900/15 rounded-full blur-[120px] -z-10" />
+    <div className="fixed inset-0 bg-background flex items-center justify-center z-50 p-6 overflow-y-auto">
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -z-10" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10" />
 
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-2xl bg-slate-900/40 p-8 md:p-12 rounded-[40px] border border-slate-800/60 shadow-2xl backdrop-blur-2xl relative z-10 my-8"
-      >
-        <div className="flex flex-col items-center mb-10 text-center">
-            <div className="bg-indigo-600/20 p-3 rounded-2xl mb-4">
-              <Zap className="w-8 h-8 text-indigo-500" />
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <Card className="w-full max-w-2xl bg-card/60 backdrop-blur-2xl border-border shadow-2xl my-8">
+          <CardHeader className="text-center pb-6">
+            <div className="bg-primary/20 p-3 rounded-2xl mx-auto mb-4">
+              <Zap className="w-8 h-8 text-primary" />
             </div>
-            <h1 className="text-3xl font-black text-white tracking-tighter">Initialize Identity</h1>
-            <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] mt-2">Select your clearance level and join ZORVYN</p>
-        </div>
+            <CardTitle className="text-3xl font-black tracking-tighter">Initialize Identity</CardTitle>
+            <CardDescription className="font-bold uppercase tracking-widest text-[10px]">Select your clearance level and join ZORVYN</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {error && <div className="bg-destructive/10 text-destructive p-4 rounded-xl text-xs font-black border border-destructive/20 mb-6 uppercase tracking-widest">{error}</div>}
 
-        {error && <div className="bg-rose-500/10 text-rose-500 p-4 rounded-xl text-xs font-black border border-rose-500/20 mb-6 uppercase tracking-widest">{error}</div>}
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-black uppercase tracking-widest">First Name</Label>
+                  <Input {...register('firstName')} placeholder="Alex" />
+                  {errors.firstName && <p className="text-[9px] text-destructive font-bold">{errors.firstName.message as string}</p>}
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-black uppercase tracking-widest">Last Name</Label>
+                  <Input {...register('lastName')} placeholder="Zorvyn" />
+                  {errors.lastName && <p className="text-[9px] text-destructive font-bold">{errors.lastName.message as string}</p>}
+                </div>
+              </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          {/* Identity Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">First Name</label>
-              <input 
-                {...register('firstName')}
-                placeholder="Alex"
-                className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-4 py-3.5 text-sm focus:border-indigo-500 transition-all outline-none font-medium"
-              />
-              {errors.firstName && <p className="text-[9px] text-rose-500 font-bold ml-1">{errors.firstName.message as string}</p>}
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Last Name</label>
-              <input 
-                {...register('lastName')}
-                placeholder="Zorvyn"
-                className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-4 py-3.5 text-sm focus:border-indigo-500 transition-all outline-none font-medium"
-              />
-              {errors.lastName && <p className="text-[9px] text-rose-500 font-bold ml-1">{errors.lastName.message as string}</p>}
-            </div>
-          </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest">Email Terminal</Label>
+                <Input {...register('email')} placeholder="alex@zorvyn.com" />
+                {errors.email && <p className="text-[9px] text-destructive font-bold">{errors.email.message as string}</p>}
+              </div>
 
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Email Terminal</label>
-            <input 
-              {...register('email')}
-              placeholder="alex@zorvyn.com"
-              className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-4 py-3.5 text-sm focus:border-indigo-500 transition-all outline-none font-medium"
-            />
-            {errors.email && <p className="text-[9px] text-rose-500 font-bold ml-1 text-center">{errors.email.message as string}</p>}
-          </div>
+              <div className="space-y-3">
+                <Label className="text-[10px] font-black uppercase tracking-widest">Select Access Level</Label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <RoleOption active={selectedRole === 'VIEWER'} onClick={() => setValue('role', 'VIEWER')} icon={<Eye className="w-5 h-5" />} title="Viewer" desc="Read-only summary" />
+                  <RoleOption active={selectedRole === 'ANALYST'} onClick={() => setValue('role', 'ANALYST')} icon={<Search className="w-5 h-5" />} title="Analyst" desc="Logs & Analytics" />
+                  <RoleOption active={selectedRole === 'ADMIN'} onClick={() => setValue('role', 'ADMIN')} icon={<Shield className="w-5 h-5" />} title="Admin" desc="Full CRUD Logic" />
+                </div>
+              </div>
 
-          <div className="space-y-4">
-            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Select Access Level (Simulation)</label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <RoleOption 
-                active={selectedRole === 'VIEWER'} 
-                onClick={() => setValue('role', 'VIEWER')}
-                icon={<Eye className="w-5 h-5" />}
-                title="Viewer"
-                desc="Read-only summary"
-              />
-              <RoleOption 
-                active={selectedRole === 'ANALYST'} 
-                onClick={() => setValue('role', 'ANALYST')}
-                icon={<Search className="w-5 h-5" />}
-                title="Analyst"
-                desc="Logs & Analytics"
-              />
-              <RoleOption 
-                active={selectedRole === 'ADMIN'} 
-                onClick={() => setValue('role', 'ADMIN')}
-                icon={<Shield className="w-5 h-5" />}
-                title="Admin"
-                desc="Full CRUD Logic"
-              />
-            </div>
-          </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest">Security Key</Label>
+                <Input type="password" {...register('password')} placeholder="••••••••" />
+                {errors.password && <p className="text-[9px] text-destructive font-bold">{errors.password.message as string}</p>}
+              </div>
 
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Security Key</label>
-            <input 
-              type="password"
-              {...register('password')}
-              placeholder="••••••••"
-              className="w-full bg-slate-950/80 border border-slate-800 rounded-2xl px-4 py-3.5 text-sm focus:border-indigo-500 transition-all outline-none font-medium text-center"
-            />
-            {errors.password && <p className="text-[9px] text-rose-500 font-bold text-center">{errors.password.message as string}</p>}
-          </div>
+              <Button disabled={loading} className="w-full font-black uppercase tracking-widest text-xs" size="lg">
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Authorize Strategic Account'}
+              </Button>
 
-          <button 
-             disabled={loading}
-             className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-indigo-600/20 uppercase tracking-widest text-xs flex items-center justify-center gap-2"
-          >
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Authorize Strategic Account'}
-          </button>
-
-          <p className="text-center text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-            Already authorized? <Link href="/login" className="text-indigo-500 hover:text-indigo-400">Log In</Link>
-          </p>
-        </form>
+              <p className="text-center text-muted-foreground text-[10px] font-bold uppercase tracking-widest">
+                Already authorized? <Link href="/login" className="text-primary hover:underline">Log In</Link>
+              </p>
+            </form>
+          </CardContent>
+        </Card>
       </motion.div>
     </div>
   );
@@ -156,13 +116,15 @@ export default function RegisterPage() {
 
 function RoleOption({ active, onClick, icon, title, desc }: any) {
   return (
-    <div 
+    <Card
       onClick={onClick}
-      className={`p-4 rounded-2xl border cursor-pointer transition-all duration-300 flex flex-col items-center text-center gap-2 ${active ? 'bg-indigo-600/10 border-indigo-500 shadow-lg shadow-indigo-500/10' : 'bg-slate-950/50 border-slate-800 hover:border-slate-700'}`}
+      className={`cursor-pointer transition-all duration-300 text-center hover:scale-[1.02] ${active ? 'bg-primary/10 border-primary shadow-lg shadow-primary/10' : 'bg-card hover:border-muted-foreground/30'}`}
     >
-      <div className={`${active ? 'text-indigo-400' : 'text-slate-600'} mb-1`}>{icon}</div>
-      <h3 className={`text-xs font-black uppercase tracking-widest ${active ? 'text-white' : 'text-slate-400'}`}>{title}</h3>
-      <p className="text-[8px] text-slate-500 font-bold uppercase tracking-tighter leading-tight">{desc}</p>
-    </div>
+      <CardContent className="p-4 flex flex-col items-center gap-2">
+        <div className={`${active ? 'text-primary' : 'text-muted-foreground'} mb-1`}>{icon}</div>
+        <h3 className={`text-xs font-black uppercase tracking-widest ${active ? 'text-foreground' : 'text-muted-foreground'}`}>{title}</h3>
+        <p className="text-[8px] text-muted-foreground font-bold uppercase tracking-tighter leading-tight">{desc}</p>
+      </CardContent>
+    </Card>
   );
 }

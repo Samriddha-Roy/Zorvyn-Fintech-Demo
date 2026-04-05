@@ -3,6 +3,7 @@ import { Inter, Geist } from 'next/font/google';
 import QueryProvider from '@/providers/QueryProvider';
 import Sidebar from '@/components/layout/Sidebar';
 import AuthGuard from '@/components/auth/AuthGuard';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { cn } from "@/lib/utils";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
@@ -20,21 +21,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
-      <body className={`${inter.className} bg-slate-950 text-slate-100 min-h-screen flex`}>
+    <html lang="en" className={cn("dark font-sans", geist.variable)}>
+      <body className={`${inter.className} bg-background text-foreground min-h-screen flex`}>
         <QueryProvider>
-          <AuthGuard>
-            <SidebarWrapper>
-              {children}
-            </SidebarWrapper>
-          </AuthGuard>
+          <TooltipProvider>
+            <AuthGuard>
+              <SidebarWrapper>
+                {children}
+              </SidebarWrapper>
+            </AuthGuard>
+          </TooltipProvider>
         </QueryProvider>
       </body>
     </html>
   );
 }
 
-// Wrapper component to conditionally hide sidebar on auth pages
 function SidebarWrapper({ children }: { children: React.ReactNode }) {
   return (
     <>
