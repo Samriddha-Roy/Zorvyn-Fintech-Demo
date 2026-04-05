@@ -41,7 +41,9 @@ export default function RegisterPage() {
       await api.post('/auth/register', data);
       setTimeout(() => router.push('/login'), 1000);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed. Try again.');
+      console.error('❌ Registration error context:', err);
+      const msg = err.response?.data?.message || err.message || 'Registration failed.';
+      setError(msg);
     } finally {
       setLoading(false);
     }

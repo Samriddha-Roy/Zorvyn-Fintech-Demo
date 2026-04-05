@@ -38,7 +38,9 @@ export default function LoginPage() {
       setAuth(res.data.accessToken, res.data.user);
       router.push('/');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Authorization failed. Verify credentials.');
+      console.error('❌ Login error context:', err);
+      const msg = err.response?.data?.message || err.message || 'Authorization failed.';
+      setError(msg);
     } finally {
       setLoading(false);
     }

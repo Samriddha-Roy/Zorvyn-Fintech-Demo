@@ -8,6 +8,10 @@ const api = axios.create({
   },
 });
 
+if (typeof window !== 'undefined') {
+  console.log('📡 API Base URL initialized as:', api.defaults.baseURL);
+}
+
 // Add a request interceptor to inject the JWT
 api.interceptors.request.use(
   (config) => {
