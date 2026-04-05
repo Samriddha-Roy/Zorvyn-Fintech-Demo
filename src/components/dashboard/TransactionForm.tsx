@@ -102,7 +102,7 @@ export default function TransactionForm({ onClose, initialData }: Props) {
             <Input {...register('notes')} placeholder="Describe transaction context..." />
           </div>
 
-          <Button disabled={isPending} className="w-full font-black uppercase tracking-widest text-xs" size="lg">
+          <Button type="submit" disabled={isPending} className="w-full font-black uppercase tracking-widest text-xs" size="lg">
             {isPending ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : isEdit ? (

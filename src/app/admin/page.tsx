@@ -111,9 +111,9 @@ export default function AdminPage() {
                       <TableCell>
                         <div className="flex justify-center">
                           <Select 
-                            defaultValue={u.role || 'VIEWER'} 
+                            defaultValue={(u.role || 'VIEWER') as string} 
                             disabled={isUpdating} 
-                            onValueChange={(val) => { if (val) updateRole({ id: u.id, role: val }); }}
+                            onValueChange={(val: string | null) => { if (val) updateRole({ id: u.id, role: val }); }}
                           >
                             <SelectTrigger className="w-32 h-8 text-[9px] font-black uppercase tracking-widest">
                               <SelectValue />

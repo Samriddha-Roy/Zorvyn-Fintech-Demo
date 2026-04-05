@@ -57,7 +57,7 @@ export default function TransactionsPage() {
             />
           </div>
           
-          <Select value={typeFilter} onValueChange={(val) => { if (val) { setTypeFilter(val); setPage(1); } }}>
+          <Select value={typeFilter} onValueChange={(val: string | null) => { if (val) { setTypeFilter(val); setPage(1); } }}>
             <SelectTrigger><SelectValue placeholder="All Types" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">All Types</SelectItem>

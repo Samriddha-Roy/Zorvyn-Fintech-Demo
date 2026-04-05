@@ -80,7 +80,12 @@ export default function LoginPage() {
                 {errors.password && <p className="text-[10px] text-destructive font-bold">{errors.password.message as string}</p>}
               </div>
 
-              <Button disabled={loading} className="w-full font-black uppercase tracking-widest text-xs" size="lg">
+              <Button 
+                type="submit" 
+                disabled={loading} 
+                className="w-full font-black uppercase tracking-widest text-xs" 
+                size="lg"
+              >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Authorize Identity'}
               </Button>
 
