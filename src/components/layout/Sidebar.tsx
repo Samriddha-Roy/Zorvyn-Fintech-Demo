@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Receipt, BarChart3, Settings, ShieldAlert, LogOut, Zap } from 'lucide-react';
+import { LayoutDashboard, Receipt, BarChart3, ShieldAlert, LogOut, Zap } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { UserRole } from '@/types';
 import { cn } from '@/lib/utils';
@@ -19,10 +19,9 @@ export default function Sidebar({ className }: { className?: string }) {
 
   const routes = [
     { label: 'Dashboard', icon: LayoutDashboard, href: '/', roles: ['VIEWER', 'ANALYST', 'ADMIN'] },
-    { label: 'Transactions', icon: Receipt, href: '/transactions', roles: ['ANALYST', 'ADMIN'] },
+    { label: 'Transactions', icon: Receipt, href: '/transactions', roles: ['ADMIN'] },
     { label: 'Analytics', icon: BarChart3, href: '/analytics', roles: ['ANALYST', 'ADMIN'] },
     { label: 'Admin Panel', icon: ShieldAlert, href: '/admin', roles: ['ADMIN'] },
-    { label: 'Settings', icon: Settings, href: '/settings', roles: ['VIEWER', 'ANALYST', 'ADMIN'] },
   ];
 
   const filteredRoutes = routes.filter(route => route.roles.includes(role));

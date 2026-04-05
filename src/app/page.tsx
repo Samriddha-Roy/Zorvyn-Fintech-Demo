@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useSummary } from '@/hooks/useData';
 import SummaryCards from '@/components/dashboard/SummaryCards';
 import AnalyticsChart from '@/components/dashboard/AnalyticsChart';
 import TransactionTable from '@/components/dashboard/TransactionTable';
 import TransactionForm from '@/components/dashboard/TransactionForm';
+import EmptyDashboardState from '@/components/dashboard/EmptyDashboardState';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserRole } from '@/types';
 import { Plus, ShieldCheck, Lock, Activity, BarChart3, Receipt } from 'lucide-react';
@@ -14,9 +16,11 @@ export default function DashboardPage() {
   const { user } = useAuthStore();
   const role = (user?.role as UserRole) || 'VIEWER';
   const [showTransactionModal, setShowTransactionModal] = useState(false);
+  const { data: summary } = useSummary();
 
   const canViewReports = role === 'ANALYST' || role === 'ADMIN';
   const canManageData = role === 'ADMIN';
+  const hasData = (summary?.transactionCount || 0) > 0;
 
   return (
     <div className="space-y-12 pb-24">
@@ -34,7 +38,6 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Global Admin Control Panel CTA */}
         {canManageData && (
           <button 
             onClick={() => setShowTransactionModal(true)}
@@ -48,7 +51,7 @@ export default function DashboardPage() {
         )}
       </header>
 
-      {/* READ-ONLY SUMMARY (All Roles) */}
+      {/* SUMMARY CARDS (All Roles) */}
       <section className="space-y-6">
         <div className="flex items-center gap-3 px-2">
            <Activity className="w-4 h-4 text-emerald-500" />
@@ -57,57 +60,59 @@ export default function DashboardPage() {
         <SummaryCards />
       </section>
 
-      {/* DYNAMIC CONTENT SECTIONS */}
-      <div className="grid grid-cols-1 gap-12">
-        
-        {/* ANALYTICS SECTION */}
-        <section className="space-y-6">
-          <div className="flex items-center justify-between px-2">
-            <div className="flex items-center gap-3">
-              <BarChart3 className="w-4 h-4 text-indigo-500" />
-              <h2 className="text-[11px] font-black uppercase tracking-[0.25em] text-slate-500">Trend Intelligence</h2>
-            </div>
-          </div>
-          {canViewReports ? (
-            <AnalyticsChart />
-          ) : (
-             <PlaceholderCard 
-               icon={<BarChart3 className="w-10 h-10" />} 
-               title="Charts Restricted" 
-               desc="Visual trend analysis requires Analyst or Admin clearance." 
-             />
-          )}
-        </section>
+      {/* VIEWER WITH NO DATA: Show onboarding */}
+      {role === 'VIEWER' && !hasData && (
+        <EmptyDashboardState />
+      )}
 
-        {/* TRANSACTION LEDGER SECTION */}
-        <section className="space-y-6">
-          <div className="flex items-center justify-between px-2">
-            <div className="flex items-center gap-3">
-              <Receipt className="w-4 h-4 text-indigo-500" />
-              <h2 className="text-[11px] font-black uppercase tracking-[0.25em] text-slate-500">Secure Ledger Logs</h2>
+      {/* CONTENT SECTIONS (only when data exists or user has reports access) */}
+      {(canViewReports || hasData) && (
+        <div className="grid grid-cols-1 gap-12">
+          <section className="space-y-6">
+            <div className="flex items-center justify-between px-2">
+              <div className="flex items-center gap-3">
+                <BarChart3 className="w-4 h-4 text-indigo-500" />
+                <h2 className="text-[11px] font-black uppercase tracking-[0.25em] text-slate-500">Trend Intelligence</h2>
+              </div>
             </div>
-            {!canViewReports && (
-               <span className="flex items-center gap-2 text-[9px] font-black text-rose-500/80 uppercase tracking-widest bg-rose-500/5 px-3 py-1 rounded-full border border-rose-500/10">
-                 <Lock className="w-3 h-3" /> Encrypted Data
-               </span>
+            {canViewReports ? (
+              <AnalyticsChart />
+            ) : (
+               <PlaceholderCard 
+                 icon={<BarChart3 className="w-10 h-10" />} 
+                 title="Charts Restricted" 
+                 desc="Visual trend analysis requires Analyst or Admin clearance." 
+               />
             )}
-          </div>
-          
-          {canViewReports ? (
-            <TransactionTable />
-          ) : (
-            <PlaceholderCard 
-              icon={<Lock className="w-10 h-10" />} 
-              title="Ledger Access Denied" 
-              desc="The detailed transaction log is strictly restricted to cleared personnel." 
-              locked
-            />
-          )}
-        </section>
+          </section>
 
-      </div>
+          <section className="space-y-6">
+            <div className="flex items-center justify-between px-2">
+              <div className="flex items-center gap-3">
+                <Receipt className="w-4 h-4 text-indigo-500" />
+                <h2 className="text-[11px] font-black uppercase tracking-[0.25em] text-slate-500">Secure Ledger Logs</h2>
+              </div>
+              {!canViewReports && (
+                 <span className="flex items-center gap-2 text-[9px] font-black text-rose-500/80 uppercase tracking-widest bg-rose-500/5 px-3 py-1 rounded-full border border-rose-500/10">
+                   <Lock className="w-3 h-3" /> Encrypted Data
+                 </span>
+              )}
+            </div>
+            
+            {canViewReports ? (
+              <TransactionTable />
+            ) : (
+              <PlaceholderCard 
+                icon={<Lock className="w-10 h-10" />} 
+                title="Ledger Access Denied" 
+                desc="The detailed transaction log is strictly restricted to cleared personnel." 
+                locked
+              />
+            )}
+          </section>
+        </div>
+      )}
 
-      {/* Administrative Modals */}
       <AnimatePresence>
         {showTransactionModal && (
           <TransactionForm onClose={() => setShowTransactionModal(false)} />

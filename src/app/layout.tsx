@@ -1,8 +1,11 @@
 import './globals.css';
-import { Inter } from 'next/font/google';
+import { Inter, Geist } from 'next/font/google';
 import QueryProvider from '@/providers/QueryProvider';
 import Sidebar from '@/components/layout/Sidebar';
 import AuthGuard from '@/components/auth/AuthGuard';
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={cn("font-sans", geist.variable)}>
       <body className={`${inter.className} bg-slate-950 text-slate-100 min-h-screen flex`}>
         <QueryProvider>
           <AuthGuard>

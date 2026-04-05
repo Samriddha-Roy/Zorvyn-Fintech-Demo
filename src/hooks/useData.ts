@@ -46,6 +46,17 @@ export const useAnalytics = () => {
   });
 };
 
+// Fetch Global Analytics (Analyst/Admin - anonymized financial sums)
+export const useGlobalAnalytics = () => {
+  return useQuery<MonthlyBreakdown[]>({
+    queryKey: ['global-analytics'],
+    queryFn: async () => {
+      const { data } = await api.get('/transactions/global-analytics');
+      return data;
+    },
+  });
+};
+
 // Admin: Fetch all users
 export const useUsers = () => {
   return useQuery<User[]>({
